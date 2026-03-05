@@ -4,6 +4,7 @@ import { RecipList } from '../components/recipes/RecipList'
 import { RecipModal } from '../components/recipes/RecipModal'
 import { RecipPagination } from '../components/recipes/RecipPagination'
 import { ReceipSearch } from '../components/recipes/receipSearch'
+import { Loader } from '../components/ui/Loader'
 import { getRecipeDetail, searchRecipes } from '../services/mealDb'
 import type { RecipeDetail, RecipeSummary } from '../types/recipe'
 
@@ -177,17 +178,25 @@ export function RecipesPage() {
           <h2 className="text-lg font-semibold text-slate-900">
             Search Results {recipes.length ? `(${recipes.length})` : ''}
           </h2>
-          <RecipList
-            recipes={paginatedRecipes}
-            hasSearched={hasSearched}
-            selectedRecipeId={selectedRecipeId}
-            onSelectRecipe={handleSelectRecipe}
-          />
-          <RecipPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          {isSearching ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <Loader size={38} />
+            </div>
+          ) : (
+            <>
+              <RecipList
+                recipes={paginatedRecipes}
+                hasSearched={hasSearched}
+                selectedRecipeId={selectedRecipeId}
+                onSelectRecipe={handleSelectRecipe}
+              />
+              <RecipPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </>
+          )}
         </section>
       </div>
       <RecipModal
