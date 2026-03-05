@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { RecipDetail } from '../components/recipes/RecipDetail'
 import { RecipList } from '../components/recipes/RecipList'
 import { RecipModal } from '../components/recipes/RecipModal'
@@ -6,6 +6,8 @@ import { RecipPagination } from '../components/recipes/RecipPagination'
 import { ReceipSearch } from '../components/recipes/receipSearch'
 import { Loader } from '../components/ui/Loader'
 import { getRecipeDetail, searchRecipes } from '../services/mealDb'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { toggleFavorite } from '../store/favoritesSlice'
 import type { RecipeDetail, RecipeSummary } from '../types/recipe'
 
 function getErrorMessage(error: unknown, fallback: string): string {
@@ -26,6 +28,13 @@ function getItemsPerPageByWidth(width: number): number {
 }
 
 export function RecipesPage() {
+  const dispatch = useAppDispatch()
+  const favoriteRecipes = useAppSelector((state) => state.favorites.items)
+  const favoriteRecipeIds = useMemo(
+    () => new Set(favoriteRecipes.map((recipe) => recipe.id)),
+    [favoriteRecipes],
+  )
+
   const [recipeName, setRecipeName] = useState('')
   const [ingredient, setIngredient] = useState('')
   const [recipes, setRecipes] = useState<RecipeSummary[]>([])
@@ -112,6 +121,10 @@ export function RecipesPage() {
     setIsDetailModalOpen(true)
   }
 
+  const handleToggleFavorite = (recipe: RecipeSummary) => {
+    dispatch(toggleFavorite(recipe))
+  }
+
   const handleSearch = async () => {
     setSearchError(null)
 
@@ -188,7 +201,9 @@ export function RecipesPage() {
                 recipes={paginatedRecipes}
                 hasSearched={hasSearched}
                 selectedRecipeId={selectedRecipeId}
+                favoriteRecipeIds={favoriteRecipeIds}
                 onSelectRecipe={handleSelectRecipe}
+                onToggleFavorite={handleToggleFavorite}
               />
               <RecipPagination
                 currentPage={currentPage}
