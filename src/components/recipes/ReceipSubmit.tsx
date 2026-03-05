@@ -1,0 +1,15 @@
+type ReceipSubmitProps = {
+  isLoading: boolean
+}
+
+export function ReceipSubmit({ isLoading }: ReceipSubmitProps) {
+  return (
+    <button
+      type="submit"
+      disabled={isLoading}
+      className="rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-emerald-300"
+    >
+      {isLoading ? 'Searching...' : 'Search'}
+    </button>
+  )
+}
