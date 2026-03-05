@@ -1,4 +1,5 @@
 import type { RecipeDetail } from '../../types/recipe'
+import { Loader } from '../ui/Loader'
 
 type RecipDetailProps = {
   recipe: RecipeDetail | null
@@ -10,7 +11,7 @@ export function RecipDetail({ recipe, isLoading, errorMessage }: RecipDetailProp
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm text-slate-600">Loading recipe details...</p>
+        <Loader size={34} />
       </div>
     )
   }
