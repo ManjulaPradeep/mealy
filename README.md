@@ -1,73 +1,75 @@
-# React + TypeScript + Vite
+# Mealy - Recipe Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Mealy is a React + TypeScript app for searching meals from TheMealDB, viewing recipe details, and managing favorite recipes with persistence.
 
-Currently, two official plugins are available:
+## Local Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. Prerequisites
+- Node.js 18+ (Node 20+ recommended)
+- npm 9+
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Install dependencies
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Configure environment
+Create a `.env` file in the project root:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_MEAL_DB_BASE_URL=https://www.themealdb.com/api/json/v1
+VITE_MEAL_DB_SECRET=1
 ```
+
+You can also copy from `.env.example`.
+
+### 4. Run the app
+```bash
+npm run dev
+```
+
+App runs at the Vite local URL shown in terminal (usually `http://localhost:5173`).
+
+### 5. Build for production
+```bash
+npm run build
+```
+
+### 6. Lint
+```bash
+npm run lint
+```
+
+### 7. Run unit tests
+```bash
+npm run test
+```
+
+## Implemented Features
+
+- Search recipes by recipe name and/or main ingredient.
+- Filter recipes by category and cuisine.
+- Combined filtering logic (search + filters applied together).
+- Reset action to clear inputs, filters, results, and selection state.
+- Responsive recipe list with pagination.
+- Recipe detail modal:
+  - Name, image, instructions
+  - Ingredients and measurements
+  - Category and cuisine/area
+  - Source and video links (when available)
+- Favorite recipes:
+  - Heart toggle on recipe cards
+  - Add/remove favorite directly from cards
+  - Favorites persisted to localStorage via Redux store subscription
+  - Favorites page displaying saved recipes
+- Loading states:
+  - Reusable Loader component
+  - Loader in search requests, detail requests, and submit button
+
+## Design Choices (Brief)
+
+- **Component separation:** Search form, filters, reset button, list, card, pagination, modal, and detail are split into separate components for maintainability.
+- **Service layer:** API calls and response mapping live in `src/services/mealDb.ts` to keep UI components focused on rendering/state.
+- **Composable query strategy:** Search + ingredient/category/cuisine filters are combined by intersecting recipe IDs from each API result set.
+- **State management:** React local state is used for page/UI flow; Redux is used for cross-page favorites with localStorage persistence.
+- **Responsive UX:** Card layout and pagination are tuned by viewport breakpoints to keep pages visually filled and predictable.
