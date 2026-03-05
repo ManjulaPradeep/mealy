@@ -1,7 +1,7 @@
 import type { RecipeDetail, RecipeIngredient, RecipeSummary } from '../types/recipe'
 
-const VITE_MEAL_DB_BASE_URL = import.meta.env.VITE_VITE_MEAL_DB_BASE_URL
-const VITE_MEAL_DB_SECRET = import.meta.env.VITE_VITE_MEAL_DB_SECRET
+const VITE_MEAL_DB_BASE_URL = import.meta.env.VITE_MEAL_DB_BASE_URL
+const VITE_MEAL_DB_SECRET = import.meta.env.VITE_MEAL_DB_SECRET
 
 type MealDbMeal = {
   idMeal: string
@@ -26,10 +26,18 @@ type MealDbResponse<TMeal> = {
   meals: TMeal[] | null
 }
 
+type MealDbCategory = {
+  strCategory: string
+}
+
+type MealDbArea = {
+  strArea: string
+}
+
 function buildUrl(path: string): string {
   if (!VITE_MEAL_DB_BASE_URL || !VITE_MEAL_DB_SECRET) {
     throw new Error(
-      'Missing MealDB env values. Set VITE_VITE_MEAL_DB_BASE_URL and VITE_VITE_MEAL_DB_SECRET.',
+      'Missing MealDB env values. Set VITE_MEAL_DB_BASE_URL and VITE_MEAL_DB_SECRET.',
     )
   }
 
@@ -84,15 +92,20 @@ function mapMealToDetail(meal: MealDbMeal): RecipeDetail {
 export async function searchRecipes(params: {
   name: string
   ingredient: string
+  category: string
+  cuisine: string
 }): Promise<RecipeSummary[]> {
   const name = params.name.trim()
   const ingredient = params.ingredient.trim()
+  const category = params.category.trim()
+  const cuisine = params.cuisine.trim()
 
-  if (!name && !ingredient) {
+  if (!name && !ingredient && !category && !cuisine) {
     return []
   }
 
-  const [nameResponse, ingredientResponse] = await Promise.all([
+  const [nameResponse, ingredientResponse, categoryResponse, cuisineResponse] =
+    await Promise.all([
     name
       ? fetchMealDb<MealDbResponse<MealDbMeal>>(
           `search.php?s=${encodeURIComponent(name)}`,
@@ -103,21 +116,45 @@ export async function searchRecipes(params: {
           `filter.php?i=${encodeURIComponent(ingredient)}`,
         )
       : Promise.resolve({ meals: null }),
-  ])
+    category
+      ? fetchMealDb<MealDbResponse<MealDbFilterMeal>>(
+          `filter.php?c=${encodeURIComponent(category)}`,
+        )
+      : Promise.resolve({ meals: null }),
+    cuisine
+      ? fetchMealDb<MealDbResponse<MealDbFilterMeal>>(
+          `filter.php?a=${encodeURIComponent(cuisine)}`,
+        )
+      : Promise.resolve({ meals: null }),
+    ])
 
-  const nameMatches = (nameResponse.meals ?? []).map(mapMealToSummary)
-  const ingredientMatches = (ingredientResponse.meals ?? []).map(mapMealToSummary)
-
-  if (name && ingredient) {
-    const ingredientIds = new Set(ingredientMatches.map((recipe) => recipe.id))
-    return nameMatches.filter((recipe) => ingredientIds.has(recipe.id))
-  }
+  const resultSets: RecipeSummary[][] = []
 
   if (name) {
-    return nameMatches
+    resultSets.push((nameResponse.meals ?? []).map(mapMealToSummary))
+  }
+  if (ingredient) {
+    resultSets.push((ingredientResponse.meals ?? []).map(mapMealToSummary))
+  }
+  if (category) {
+    resultSets.push((categoryResponse.meals ?? []).map(mapMealToSummary))
+  }
+  if (cuisine) {
+    resultSets.push((cuisineResponse.meals ?? []).map(mapMealToSummary))
   }
 
-  return ingredientMatches
+  if (!resultSets.length) {
+    return []
+  }
+
+  let matches = resultSets[0]
+
+  for (let index = 1; index < resultSets.length; index += 1) {
+    const matchIds = new Set(resultSets[index].map((recipe) => recipe.id))
+    matches = matches.filter((recipe) => matchIds.has(recipe.id))
+  }
+
+  return matches
 }
 
 export async function getRecipeDetail(id: string): Promise<RecipeDetail | null> {
@@ -127,4 +164,14 @@ export async function getRecipeDetail(id: string): Promise<RecipeDetail | null> 
   
   const meal = response.meals?.[0]
   return meal ? mapMealToDetail(meal) : null
+}
+
+export async function getRecipeCategories(): Promise<string[]> {
+  const response = await fetchMealDb<MealDbResponse<MealDbCategory>>('list.php?c=list')
+  return (response.meals ?? []).map((item) => item.strCategory)
+}
+
+export async function getRecipeCuisines(): Promise<string[]> {
+  const response = await fetchMealDb<MealDbResponse<MealDbArea>>('list.php?a=list')
+  return (response.meals ?? []).map((item) => item.strArea)
 }
