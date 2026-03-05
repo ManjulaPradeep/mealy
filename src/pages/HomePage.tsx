@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { RandomRecipe } from '../components/recipes/RandomRecipe'
 
 const featureCards = [
   {
@@ -38,6 +39,9 @@ export function HomePage() {
           >
             View Favorites
           </Link>
+
+                <RandomRecipe />
+
         </div>
       </div>
 
