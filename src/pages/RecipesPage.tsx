@@ -5,7 +5,12 @@ import { RecipModal } from '../components/recipes/RecipModal'
 import { RecipPagination } from '../components/recipes/RecipPagination'
 import { ReceipSearch } from '../components/recipes/receipSearch'
 import { Loader } from '../components/ui/Loader'
-import { getRecipeDetail, searchRecipes } from '../services/mealDb'
+import {
+  getRecipeCategories,
+  getRecipeCuisines,
+  getRecipeDetail,
+  searchRecipes,
+} from '../services/mealDb'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { toggleFavorite } from '../store/favoritesSlice'
 import type { RecipeDetail, RecipeSummary } from '../types/recipe'
@@ -37,6 +42,11 @@ export function RecipesPage() {
 
   const [recipeName, setRecipeName] = useState('')
   const [ingredient, setIngredient] = useState('')
+  const [category, setCategory] = useState('')
+  const [cuisine, setCuisine] = useState('')
+  const [categories, setCategories] = useState<string[]>([])
+  const [cuisines, setCuisines] = useState<string[]>([])
+  const [isLoadingFilters, setIsLoadingFilters] = useState(false)
   const [recipes, setRecipes] = useState<RecipeSummary[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(() =>
@@ -49,7 +59,38 @@ export function RecipesPage() {
   const [isLoadingDetail, setIsLoadingDetail] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
+  const [filterError, setFilterError] = useState<string | null>(null)
   const [detailError, setDetailError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isCancelled = false
+    setIsLoadingFilters(true)
+    setFilterError(null)
+
+    Promise.all([getRecipeCategories(), getRecipeCuisines()])
+      .then(([categoryList, cuisineList]) => {
+        if (!isCancelled) {
+          setCategories(categoryList)
+          setCuisines(cuisineList)
+        }
+      })
+      .catch((error: unknown) => {
+        if (!isCancelled) {
+          setFilterError(
+            getErrorMessage(error, 'Failed to load recipe categories and cuisines.'),
+          )
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsLoadingFilters(false)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!selectedRecipeId) {
@@ -128,14 +169,21 @@ export function RecipesPage() {
   const handleSearch = async () => {
     setSearchError(null)
 
-    if (!recipeName.trim() && !ingredient.trim()) {
+    if (
+      !recipeName.trim() &&
+      !ingredient.trim() &&
+      !category.trim() &&
+      !cuisine.trim()
+    ) {
       setHasSearched(false)
       setCurrentPage(1)
       setIsDetailModalOpen(false)
       setRecipes([])
       setSelectedRecipeId(null)
       setSelectedRecipe(null)
-      setSearchError('Enter a recipe name, ingredient, or both.')
+      setSearchError(
+        'Enter recipe name/ingredient or choose category/cuisine to search.',
+      )
       return
     }
 
@@ -143,7 +191,12 @@ export function RecipesPage() {
     setIsSearching(true)
 
     try {
-      const matches = await searchRecipes({ name: recipeName, ingredient })
+      const matches = await searchRecipes({
+        name: recipeName,
+        ingredient,
+        category,
+        cuisine,
+      })
       setRecipes(matches)
       setCurrentPage(1)
       setIsDetailModalOpen(false)
@@ -161,6 +214,20 @@ export function RecipesPage() {
     }
   }
 
+  const handleReset = () => {
+    setRecipeName('')
+    setIngredient('')
+    setCategory('')
+    setCuisine('')
+    setHasSearched(false)
+    setSearchError(null)
+    setCurrentPage(1)
+    setIsDetailModalOpen(false)
+    setRecipes([])
+    setSelectedRecipeId(null)
+    setSelectedRecipe(null)
+  }
+
   return (
     <section className="space-y-6">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -168,19 +235,30 @@ export function RecipesPage() {
           Recipe Search
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Search by recipe name, main ingredient, or use both to narrow your
-          results.
+          Search by recipe name, ingredient, category, cuisine, or combine
+          filters to narrow results.
         </p>
 
         <ReceipSearch
           recipeName={recipeName}
           ingredient={ingredient}
+          category={category}
+          cuisine={cuisine}
+          categories={categories}
+          cuisines={cuisines}
+          isLoadingFilters={isLoadingFilters}
           isLoading={isSearching}
           onRecipeNameChange={setRecipeName}
           onIngredientChange={setIngredient}
+          onCategoryChange={setCategory}
+          onCuisineChange={setCuisine}
+          onReset={handleReset}
           onSubmit={handleSearch}
         />
 
+        {filterError ? (
+          <p className="mt-3 text-sm text-rose-700">{filterError}</p>
+        ) : null}
         {searchError ? (
           <p className="mt-3 text-sm text-rose-700">{searchError}</p>
         ) : null}
