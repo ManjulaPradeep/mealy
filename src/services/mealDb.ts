@@ -166,6 +166,13 @@ export async function getRecipeDetail(id: string): Promise<RecipeDetail | null> 
   return meal ? mapMealToDetail(meal) : null
 }
 
+export async function getRandomRecipe(): Promise<RecipeDetail | null> {
+  const response = await fetchMealDb<MealDbResponse<MealDbMeal>>('random.php')
+
+  const meal = response.meals?.[0]
+  return meal ? mapMealToDetail(meal) : null
+}
+
 export async function getRecipeCategories(): Promise<string[]> {
   const response = await fetchMealDb<MealDbResponse<MealDbCategory>>('list.php?c=list')
   return (response.meals ?? []).map((item) => item.strCategory)
