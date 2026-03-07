@@ -1,8 +1,8 @@
-import { ReceipFilters } from './ReceipFilters'
-import { ReceipReset } from './ReceipReset'
-import { ReceipSubmit } from './ReceipSubmit'
+import { RecipeFilters } from './RecipeFilters'
+import { RecipeReset } from './RecipeReset'
+import { RecipeSubmit } from './RecipeSubmit'
 
-type ReceipSearchProps = {
+type RecipeSearchProps = {
   recipeName: string
   ingredient: string
   category: string
@@ -19,7 +19,7 @@ type ReceipSearchProps = {
   onSubmit: () => void
 }
 
-export function ReceipSearch({
+export function RecipeSearch({
   recipeName,
   ingredient,
   category,
@@ -34,7 +34,7 @@ export function ReceipSearch({
   onCuisineChange,
   onReset,
   onSubmit,
-}: ReceipSearchProps) {
+}: RecipeSearchProps) {
   const isResetDisabled =
     isLoading ||
     (!recipeName.trim() && !ingredient.trim() && !category.trim() && !cuisine.trim())
@@ -61,7 +61,7 @@ export function ReceipSearch({
         className="min-w-52 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none ring-emerald-500 transition focus:ring-2"
         onChange={(event) => onIngredientChange(event.target.value)}
       />
-      <ReceipFilters
+      <RecipeFilters
         category={category}
         cuisine={cuisine}
         categories={categories}
@@ -70,8 +70,8 @@ export function ReceipSearch({
         onCategoryChange={onCategoryChange}
         onCuisineChange={onCuisineChange}
       />
-      <ReceipSubmit isLoading={isLoading} />
-      <ReceipReset onReset={onReset} isDisabled={isResetDisabled} />
+      <RecipeSubmit isLoading={isLoading} />
+      <RecipeReset onReset={onReset} isDisabled={isResetDisabled} />
     </form>
   )
 }

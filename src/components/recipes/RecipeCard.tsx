@@ -1,6 +1,6 @@
 import type { RecipeSummary } from '../../types/recipe'
 
-type ReceipCardProps = {
+type RecipeCardProps = {
   recipe: RecipeSummary
   isSelected: boolean
   isFavorite: boolean
@@ -8,13 +8,13 @@ type ReceipCardProps = {
   onToggleFavorite: (recipe: RecipeSummary) => void
 }
 
-export function ReceipCard({
+export function RecipeCard({
   recipe,
   isSelected,
   isFavorite,
   onSelect,
   onToggleFavorite,
-}: ReceipCardProps) {
+}: RecipeCardProps) {
   return (
     <article
       className={`group relative aspect-square w-full overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${

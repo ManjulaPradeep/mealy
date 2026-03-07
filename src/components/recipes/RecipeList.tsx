@@ -1,5 +1,5 @@
 import type { RecipeSummary } from '../../types/recipe'
-import { ReceipCard } from './ReceipCard'
+import { RecipeCard } from './RecipeCard'
 
 type RecipListProps = {
   recipes: RecipeSummary[]
@@ -36,7 +36,7 @@ export function RecipList({
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {recipes.map((recipe) => (
-        <ReceipCard
+        <RecipeCard
           key={recipe.id}
           recipe={recipe}
           isSelected={selectedRecipeId === recipe.id}

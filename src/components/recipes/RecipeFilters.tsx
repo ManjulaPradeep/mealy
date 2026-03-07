@@ -1,4 +1,4 @@
-type ReceipFiltersProps = {
+type RecipeFiltersProps = {
   category: string
   cuisine: string
   categories: string[]
@@ -8,7 +8,7 @@ type ReceipFiltersProps = {
   onCuisineChange: (value: string) => void
 }
 
-export function ReceipFilters({
+export function RecipeFilters({
   category,
   cuisine,
   categories,
@@ -16,7 +16,7 @@ export function ReceipFilters({
   isLoading,
   onCategoryChange,
   onCuisineChange,
-}: ReceipFiltersProps) {
+}: RecipeFiltersProps) {
   return (
     <>
       <select

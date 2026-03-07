@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { RecipList } from '../components/recipes/RecipList'
+import { RecipList } from '../components/recipes/RecipeList'
 import { toggleFavorite } from '../store/favoritesSlice'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import type { RecipeSummary } from '../types/recipe'

@@ -1,9 +1,9 @@
-type ReceipResetProps = {
+type RecipeResetProps = {
   onReset: () => void
   isDisabled: boolean
 }
 
-export function ReceipReset({ onReset, isDisabled }: ReceipResetProps) {
+export function RecipeReset({ onReset, isDisabled }: RecipeResetProps) {
   return (
     <button
       type="button"
