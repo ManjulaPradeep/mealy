@@ -1,5 +1,7 @@
 # Mealy - Recipe Finder
 
+**Live Web Application:** [https://mealy-three.vercel.app/](https://mealy-three.vercel.app/)
+
 Mealy is a React + TypeScript app for searching meals from TheMealDB, viewing recipe details, and managing favorite recipes with persistence.
 
 ## Local Setup
