@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { RecipDetail } from '../components/recipes/RecipDetail'
-import { RecipList } from '../components/recipes/RecipList'
-import { RecipModal } from '../components/recipes/RecipModal'
-import { RecipPagination } from '../components/recipes/RecipPagination'
-import { ReceipSearch } from '../components/recipes/receipSearch'
+import { RecipDetail } from '../components/recipes/RecipeDetail'
+import { RecipList } from '../components/recipes/RecipeList'
+import { RecipModal } from '../components/recipes/RecipeModal'
+import { RecipPagination } from '../components/recipes/RecipePagination'
+import { RecipeSearch } from '../components/recipes/RecipeSearch'
 import { Loader } from '../components/ui/Loader'
 import {
   getRecipeCategories,
@@ -239,7 +239,7 @@ export function RecipesPage() {
           filters to narrow results.
         </p>
 
-        <ReceipSearch
+        <RecipeSearch
           recipeName={recipeName}
           ingredient={ingredient}
           category={category}

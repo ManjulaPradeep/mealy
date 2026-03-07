@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { getRandomRecipe } from '../../services/mealDb'
 import type { RecipeDetail } from '../../types/recipe'
-import { RecipDetail } from './RecipDetail'
-import { RecipModal } from './RecipModal'
+import { RecipDetail } from './RecipeDetail'
+import { RecipModal } from './RecipeModal'
 
 export function RandomRecipe() {
   const [isModalOpen, setIsModalOpen] = useState(false)

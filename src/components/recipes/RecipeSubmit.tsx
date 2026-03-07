@@ -1,10 +1,10 @@
 import { Loader } from '../ui/Loader'
 
-type ReceipSubmitProps = {
+type RecipeSubmitProps = {
   isLoading: boolean
 }
 
-export function ReceipSubmit({ isLoading }: ReceipSubmitProps) {
+export function RecipeSubmit({ isLoading }: RecipeSubmitProps) {
   return (
     <button
       type="submit"
