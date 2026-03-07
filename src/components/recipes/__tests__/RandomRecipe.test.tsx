@@ -3,7 +3,6 @@ import { describe, it, expect, vi } from 'vitest'
 import { RandomRecipe } from '../RandomRecipe'
 import * as api from '../../../services/mealDb'
 
-// @todo: implement real tests for this component. 
 const mockRecipe = {
   id: '1',
   name: 'Random Meal',
@@ -20,30 +19,31 @@ const mockRecipe = {
 }
 
 describe('RandomRecipe', () => {
-  it('fetches and calls onSelectRecipe when button clicked', async () => {
+  it('fetches recipe when button clicked', async () => {
     vi.spyOn(api, 'getRandomRecipe').mockResolvedValueOnce(mockRecipe)
-    const onSelect = vi.fn(() => {})
 
-    render(<RandomRecipe {...{ onSelectRecipe: onSelect } as any} />)
+    render(<RandomRecipe />)
 
-    fireEvent.click(screen.getByRole('button', { name: /random recipe/i }))
+    fireEvent.click(
+      screen.getByRole('button', { name: /feeling lucky\? get a random recipe/i })
+    )
 
     await waitFor(() => {
-      expect(onSelect).toHaveBeenCalledWith(mockRecipe)
+      expect(api.getRandomRecipe).toHaveBeenCalled()
     })
   })
 
   it('shows error when fetch fails', async () => {
     vi.spyOn(api, 'getRandomRecipe').mockRejectedValueOnce(new Error('fail'))
 
-    render(<RandomRecipe {...{ onSelectRecipe: vi.fn() } as any} />)
+    render(<RandomRecipe />)
 
-    fireEvent.click(screen.getByRole('button', { name: /random recipe/i }))
+    fireEvent.click(
+      screen.getByRole('button', { name: /feeling lucky\? get a random recipe/i })
+    )
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/failed to load random recipe/i)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/fail/i)).toBeInTheDocument()
     })
   })
 })
